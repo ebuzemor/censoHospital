@@ -1,0 +1,217 @@
+<div id="msj"></div>
+<div class="form-horizontal">
+	<fieldset>
+		<div class="form-group col-lg-4">
+			<label for="NombrePac">Nombre del Paciente:</label>
+			{!!Form::text('NombrePac', $padron[0]->NombrePaciente, ['class'=>'form-control', 'readonly'=>'true'])!!}
+		</div>
+		<div class="form-group col-lg-1">
+			<label for="Edad">Edad:</label>
+			{!!Form::text('Edad', $padron[0]->edad, ['class'=>'form-control', 'readonly'=>'true'])!!}
+		</div>
+		<div class="form-group col-lg-1">
+			<label for="Sexo">Sexo:</label>
+			{!!Form::text('Sexo', $padron[0]->sexo, ['class'=>'form-control', 'readonly'=>'true'])!!}
+		</div>
+		<div class="form-group col-lg-2">
+			<label for="RFC">RFC:</label>
+			{!!Form::text('RFC', $padron[0]->rfc, ['class'=>'form-control', 'readonly'=>'true'])!!}
+		</div>
+		<div class="form-group col-lg-2">
+			<label for="Codigo">Codigo:</label>
+			{!!Form::text('Codigo', $padron[0]->clip, ['class'=>'form-control', 'readonly'=>'true'])!!}
+		</div>
+		<div class="form-group col-lg-4">
+			<label for="Sector">Sector:</label>
+			{!!Form::text('Sector', $padron[0]->sector, ['class'=>'form-control', 'readonly'=>'true'])!!}
+		</div>
+		<div class="form-group col-lg-8">
+			<label for="Direccion">Direccion:</label>
+			{!!Form::text('Direccion', $padron[0]->dir, ['class'=>'form-control', 'readonly'=>'true'])!!}
+		</div>
+		<div class="form-group col-lg-4">
+			<label for="Municipio">Municipio:</label>
+			{!!Form::text('Municipio', $padron[0]->municipio, ['class'=>'form-control', 'readonly'=>'true'])!!}
+		</div>
+	</fieldset>
+	{!!Form::open(['url'=>'agregarCenso', 'id'=>'frmAgregaCenso'])!!}
+		<fieldset>
+			<input type="hidden" name="clap" value="{{$cita->clap}}">
+			<input type="hidden" name="fecini" value="{{$fecini or 0}}">
+			<input type="hidden" name="fecfin" value="{{$fecfin or 0}}">
+			<div class="form-group col-lg-7">
+				<label for="ocupacion">Ocupacion:</label>
+				{!!Form::text('ocupacion', null, ['class'=>'form-control', 'placeholder'=>'En caso de no tener escriba N/A'])!!}
+			</div>
+			<div class="form-group col-lg-4">
+				<label for="telefono">Telefono: (ejemplo: 961-123-4567 o 55-1234-5678)</label>
+				{!!Form::text('telefono', $padron[0]->tel, ['class'=>'form-control'])!!}
+			</div>
+			<div class="form-group col-lg-7">
+				<label for="nom_familiar">Familiar Responsable:</label>
+				{!!Form::text('nom_familiar', null, ['class'=>'form-control'])!!}
+			</div>
+			<div class="form-group col-lg-4">
+				<label for="tel_familiar">Telefono Familiar:</label>
+				{!!Form::text('tel_familiar', null, ['class'=>'form-control'])!!}
+			</div>
+			<div class="form-group col-lg-4">
+				<label for="fecha_ingreso">Fecha y Hora de Ingreso:</label>
+				{!!Form::text('fecha_ingreso', $cita->grabado, ['class'=>'form-control', 'id'=>'fecha_ingreso', 
+							  'readonly'=>'true'])!!}
+			</div>
+			<div class="form-group col-lg-4">	
+				<label for="origen_ingreso">Origen de Ingreso:</label>
+				<select name="origen_ingreso" id="origen_ingreso" class="selectpicker form-control" data-live-search="true">
+					<option value="0" selected="selected" disabled>---Elija un Origen de Ingreso---</option>
+					<option value="1">Consulta Externa</option>
+					<option value="2">Urgencias</option>
+					<option value="3">Canalizado de Otra Unidad</option>
+				</select>
+			</div>
+			<div class="form-group col-lg-4">	
+				<label for="tipo_svc">Servicio:</label>
+				{!!Form::select('tipo_svc', $servicios, null, ['class'=>'form-control selectpicker', 'id'=>'tipo_svc', 'data-live-search'=>'true'])!!}
+			</div>
+			<div class="form-group col-lg-5">	
+				<label for="especialidad">Especialidad:</label>
+				<select name="especialidad" id="especialidad" class="selectpicker form-control" data-live-search="true">
+					<option value="0" selected="selected" disabled>---ELIJA UNA ESPECIALIDAD---</option>
+					@foreach ($especial as $fila)
+						<option value="{{$fila->clave}}" data-tokens="{{$fila->descripcion_nivel}}">{{$fila->descripcion_nivel}}</option>
+					@endforeach
+				</select>
+			</div>
+			<div id="especialistas" class="form-group col-lg-4">	
+				<label for="cedula">Médico Especialista:</label>
+				<select name="cedula" id="cedula" class="selectpicker form-control" data-live-search="true">
+					<option value="0" selected="selected" disabled>---ELIJA UN MEDICO ESPECIALISTA---</option>					
+				</select>
+			</div>
+			<div class="form-group col-lg-2">
+				<label class="control-label" for="cama"># Cama: (AAAA-123)</label>
+				{!!Form::text('cama', null, ['placeholder'=>'Num. de Cama', 'class'=>'form-control'])!!}
+			</div>
+			<div class="form-group col-lg-2">
+				<label class="control-label" for="turno">Turno:</label>	
+				{!!Form::select('turno', ['Mat'=>'Matutino', 'Ves'=>'Vespertino', 'Noc'=>'Nocturno'], null, ['class'=>'form-control'])!!}	
+			</div>
+			<div class="form-group col-lg-4">
+				<label class="control-label" for="buscarDx">Buscar CIE10:</label>
+				<div class="input-group" id="buscarDx">
+      				<input type="text" class="form-control" placeholder="Escriba y seleccione el diagnóstico" id="txt_BuscarDx">
+      				<span class="input-group-btn">
+        				<button class="btn btn-info" type="button" id="btn_BuscarDx">Buscar</button>
+      				</span>
+    			</div>
+			</div>
+			<div class="form-group col-lg-8" id="cie10">
+				<label class="control-label" for="dx_entrada">Diagnóstico:</label>
+				<select name="dx_entrada" id="dx_entrada" class="selectpicker form-control" data-live-search="true">
+					<option value="0" selected="selected" disabled>---SELECCIONE DIAGNOSTICO---</option>
+				</select>
+			</div>
+			<div class="form-group col-lg-2">
+				{!!Form::submit('Agregar al Censo', ['class'=>'btn btn-success'])!!}
+			</div>
+		</fieldset>		
+	{!!Form::close()!!}
+</div>
+<script type="text/javascript">
+	$(function() {
+		$('.selectpicker').selectpicker();
+
+		$('#fecha_ingreso').datetimepicker({
+            locale: 'es',
+            format: 'YYYY-MM-DD hh:mm:ss A'
+        });
+        
+        $('#especialidad').change(function (event) {
+        	var clv = event.target.value;
+        	Solicitud_POST("medicosEspecial", {clave:clv}, function(respuesta) {
+        		$("#especialistas").html(respuesta);
+        		$("#cedula").selectpicker();
+        	});
+        });
+
+        $('#btn_BuscarDx').click(function (event) {
+        	var desc = $('#txt_BuscarDx').val();
+        	if(desc != "") {
+        		Solicitud_POST("buscarCIE10", {desc}, function(respuesta) {
+        			$("#cie10").html(respuesta);
+        			$("#dx_entrada").selectpicker();
+        		});
+        	}
+        });
+
+        // Prepare reset.
+	    function resetModalFormErrors() {
+	        $('.form-group').removeClass('has-error');
+	        $('.form-group').find('.help-block').remove();
+	    }
+
+	    // Intercept submit.
+	    $('#frmAgregaCenso').on('submit', function(submission) {
+	        submission.preventDefault();
+
+	        // Set vars.
+	        var form   = $(this),
+	            url    = form.attr('action'),
+	            submit = form.find('[type=submit]');
+
+            var data    	= form.serialize(),
+            	contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
+	        
+	        // Please wait.
+	        if (submit.is('button')) {
+	            var submitOriginal = submit.html();
+	            submit.html('Espere...');
+	        } else if (submit.is('input')) {
+	            var submitOriginal = submit.val();
+	            submit.val('Espere...');
+	        }
+
+	        // Request.
+	        $.ajax({
+	            type: "POST",
+	            url: url,
+	            data: data,
+	            dataType: 'json',
+	            cache: false,
+	            contentType: contentType,
+	            processData: false
+
+	        // Response.
+	        }).always(function(response, status) {
+
+	            // Reset errors.
+	            resetModalFormErrors();
+
+	            // Check for errors.
+	            if (response.status == 422) {
+	                var errors = $.parseJSON(response.responseText);
+
+	                // Iterate through errors object.
+	                $.each(errors, function(field, message) {
+	                    console.error(field+': '+message);
+	                    var formGroup = $('[name='+field+']', form).closest('.form-group');
+	                    formGroup.addClass('has-error').append('<p class="help-block">'+message+'</p>');
+	                });
+
+	                // Reset submit.
+	                if (submit.is('button')) {
+	                    submit.html(submitOriginal);
+	                } else if (submit.is('input')) {
+	                    submit.val(submitOriginal);
+	                }
+
+	            // If successful, reload.
+	            } else {
+	                //location.reload();
+	                $('#area_ingreso').html(response.responseText);
+	                console.log(response);
+	            }
+	        });
+	    });	    
+	});
+</script>
